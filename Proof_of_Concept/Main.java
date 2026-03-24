@@ -1,7 +1,8 @@
-import model.*;
-import service.importService;  // lowercase i, matches your file/class
-import java.util.*;
 import java.io.File;
+import java.util.*;  // lowercase i, matches your file/class
+import model.*;
+import service.exportService;
+import service.importService;
 
 public class Main {
 
@@ -36,5 +37,14 @@ public class Main {
 
         System.out.println("\nProjects loaded: " + projects.size());
         System.out.println("Collaborators loaded: " + collaborators.size());
+
+        // Export full in-memory database to CSV
+        System.out.print("\nEnter output CSV file path for export (or press Enter for exported_tasks.csv): ");
+        String outputPath = scanner.nextLine().trim();
+        if (outputPath.isEmpty()) {
+            outputPath = "exported_tasks.csv";
+        }
+
+        exportService.exportDatabase(outputPath, tasks, projects, collaborators);
     }
 }
