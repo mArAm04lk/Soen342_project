@@ -1,9 +1,10 @@
-import model.*;
-import service.importService;  // lowercase i, matches your file/class
-import service.searchService;
-import java.util.*;
 import java.io.File;
 import java.time.LocalDate;
+import java.util.*;
+import model.*;
+import service.exportService;
+import service.importService;
+import service.searchService;
 
 public class Main {
 
@@ -97,5 +98,14 @@ public class Main {
                 System.out.println(task);
             }
         }
+
+        // Export full in-memory database to CSV
+        System.out.print("\nEnter output CSV file path for export (or press Enter for exported_tasks.csv): ");
+        String outputPath = scanner.nextLine().trim();
+        if (outputPath.isEmpty()) {
+            outputPath = "exported_tasks.csv";
+        }
+
+        exportService.exportDatabase(outputPath, tasks, projects, collaborators);
     }
 }

@@ -27,6 +27,8 @@ public class Task {
     }
 
     public String getName() { return name; }
+    public String getDescription() { return description; }
+    public String getSubtask() { return subtask; }
     public String getStatus() { return status; }
     public String getPriority() { return priority; }
     public LocalDate getDueDate() { return dueDate; }
