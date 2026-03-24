@@ -1,0 +1,11 @@
+TaskName,Description,Subtask,Status,Priority,DueDate,ProjectName,ProjectDescription,Collaborator,CollaboratorCategory
+Finish PoC,Complete assignment,,OPEN,HIGH,2026-04-01,School,Assignments,Alice,Student
+Buy groceries,Milk and eggs,,OPEN,MEDIUM,2026-03-25,Personal,Home tasks,Bob,Friend
+Write report,Quarterly report,,OPEN,HIGH,2026-04-10,Work,Reports,Charlie,Senior
+Clean house,Living room and kitchen,,OPEN,LOW,2026-03-28,Home,House chores,Dave,Junior
+Prepare presentation,Sales pitch slides,,OPEN,HIGH,2026-04-05,Work,Client presentations,Eve,Intermediate
+Exercise,Go to gym,,OPEN,MEDIUM,2026-03-24,Personal,Health,Alice,Student
+Read book,Finish reading novel,,OPEN,LOW,2026-04-12,Leisure,Reading,Hank,Friend
+Pay bills,Electricity and water,,OPEN,HIGH,2026-03-26,Personal,Finance,Bob,Friend
+Update resume,Add recent projects,,OPEN,MEDIUM,2026-04-03,Career,Job applications,Charlie,Senior
+Plan vacation,Book flights and hotels,,OPEN,HIGH,2026-04-15,Personal,Travel,Eve,Intermediate
