@@ -1,6 +1,7 @@
 import model.*;
-
+import service.importService;  // lowercase i, matches your file/class
 import java.util.*;
+import java.io.File;
 
 public class Main {
 
@@ -11,23 +12,29 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Test data
-        Project project = new Project("School", "Assignments");
-        Collaborator collab = new Collaborator("Alice", "Student");
+        Scanner scanner = new Scanner(System.in);
 
-        Task task = new Task(
-                "Finish PoC",
-                "Do assignment",
-                "",
-                "OPEN",
-                "HIGH",
-                null,
-                project,
-                collab
-        );
+        // Ask user to specify the CSV file
+        System.out.print("Enter CSV file path to import: ");
+        String filePath = scanner.nextLine();
 
-        tasks.add(task);
+        // Check if file exists
+        File csvFile = new File(filePath);
+        if (!csvFile.exists()) {
+            System.out.println("File not found: " + filePath);
+            return;  // Exit if file doesn't exist
+        }
 
-        System.out.println(task);
+        // Import tasks from the specified file
+        importService.importTasks(filePath, tasks, projects, collaborators);
+
+        // Print imported tasks
+        System.out.println("\nImported Tasks:");
+        for (Task t : tasks) {
+            System.out.println(t);
+        }
+
+        System.out.println("\nProjects loaded: " + projects.size());
+        System.out.println("Collaborators loaded: " + collaborators.size());
     }
 }
