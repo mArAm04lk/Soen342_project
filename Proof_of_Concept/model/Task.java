@@ -28,8 +28,10 @@ public class Task {
 
     public String getName() { return name; }
     public String getStatus() { return status; }
+    public String getPriority() { return priority; }
     public LocalDate getDueDate() { return dueDate; }
     public Project getProject() { return project; }
+    public Collaborator getCollaborator() { return collaborator; }
 
     @Override
     public String toString() {
