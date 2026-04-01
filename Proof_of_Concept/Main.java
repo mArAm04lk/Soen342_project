@@ -1,5 +1,7 @@
 import model.*;
 import service.importService;  // lowercase i, matches your file/class
+import service.CalendarExportGateway;
+import service.ICal4jCalendarGateway;
 import java.util.*;
 import java.io.File;
 
@@ -36,5 +38,23 @@ public class Main {
 
         System.out.println("\nProjects loaded: " + projects.size());
         System.out.println("Collaborators loaded: " + collaborators.size());
+
+        // Manual integration test flow for iCal export
+        System.out.print("\nExport tasks to iCal (.ics)? (y/n): ");
+        String exportChoice = scanner.nextLine().trim();
+
+        if (exportChoice.equalsIgnoreCase("y") || exportChoice.equalsIgnoreCase("yes")) {
+            System.out.print("Enter output .ics file path (default: tasks.ics): ");
+            String outputPath = scanner.nextLine().trim();
+            if (outputPath.isEmpty()) {
+                outputPath = "tasks.ics";
+            }
+
+            CalendarExportGateway gateway = new ICal4jCalendarGateway();
+            gateway.exportTasks(tasks, outputPath);
+            System.out.println("iCal export complete: " + outputPath);
+        }
+
+        scanner.close();
     }
 }

@@ -1,0 +1,84 @@
+BEGIN:VCALENDAR
+PRODID:-//SOEN342 Task Planner//EN
+VERSION:2.0
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260401T000000
+DTEND;TZID=America/Toronto:20260401T010000
+SUMMARY:Finish PoC
+DESCRIPTION:Description: Complete assignment\nStatus: OPEN\nPriority: HIG
+ H\nProject: School\nCollaborator: Alice
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260325T000000
+DTEND;TZID=America/Toronto:20260325T010000
+SUMMARY:Buy groceries
+DESCRIPTION:Description: Milk and eggs\nStatus: OPEN\nPriority: MEDIUM\nP
+ roject: Personal\nCollaborator: Bob
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260410T000000
+DTEND;TZID=America/Toronto:20260410T010000
+SUMMARY:Write report
+DESCRIPTION:Description: Quarterly report\nStatus: OPEN\nPriority: HIGH\n
+ Project: Work\nCollaborator: Charlie
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260328T000000
+DTEND;TZID=America/Toronto:20260328T010000
+SUMMARY:Clean house
+DESCRIPTION:Description: Living room and kitchen\nStatus: OPEN\nPriority:
+  LOW\nProject: Home\nCollaborator: Dave
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260405T000000
+DTEND;TZID=America/Toronto:20260405T010000
+SUMMARY:Prepare presentation
+DESCRIPTION:Description: Sales pitch slides\nStatus: OPEN\nPriority: HIGH
+ \nProject: Work\nCollaborator: Eve
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260324T000000
+DTEND;TZID=America/Toronto:20260324T010000
+SUMMARY:Exercise
+DESCRIPTION:Description: Go to gym\nStatus: OPEN\nPriority: MEDIUM\nProje
+ ct: Personal\nCollaborator: Alice
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260412T000000
+DTEND;TZID=America/Toronto:20260412T010000
+SUMMARY:Read book
+DESCRIPTION:Description: Finish reading novel\nStatus: OPEN\nPriority: LO
+ W\nProject: Leisure\nCollaborator: Hank
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260326T000000
+DTEND;TZID=America/Toronto:20260326T010000
+SUMMARY:Pay bills
+DESCRIPTION:Description: Electricity and water\nStatus: OPEN\nPriority: H
+ IGH\nProject: Personal\nCollaborator: Bob
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260403T000000
+DTEND;TZID=America/Toronto:20260403T010000
+SUMMARY:Update resume
+DESCRIPTION:Description: Add recent projects\nStatus: OPEN\nPriority: MED
+ IUM\nProject: Career\nCollaborator: Charlie
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260401T051840Z
+DTSTART;TZID=America/Toronto:20260415T000000
+DTEND;TZID=America/Toronto:20260415T010000
+SUMMARY:Plan vacation
+DESCRIPTION:Description: Book flights and hotels\nStatus: OPEN\nPriority:
+  HIGH\nProject: Personal\nCollaborator: Eve
+END:VEVENT
+END:VCALENDAR
