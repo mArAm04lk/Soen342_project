@@ -1,3 +1,6 @@
 # Ignore compiled Java classes
 bin/
 *.class
+
+# Maven target folder
+target/
