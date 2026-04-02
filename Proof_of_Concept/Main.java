@@ -1,7 +1,9 @@
+import model.*;
+import service.CalendarExportGateway;
+import service.ICal4jCalendarGateway;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
-import model.*;
 import service.exportService;
 import service.importService;
 import service.searchService;
@@ -99,13 +101,126 @@ public class Main {
             }
         }
 
-        // Export full in-memory database to CSV
-        System.out.print("\nEnter output CSV file path for export (or press Enter for exported_tasks.csv): ");
-        String outputPath = scanner.nextLine().trim();
-        if (outputPath.isEmpty()) {
-            outputPath = "exported_tasks.csv";
+        System.out.println("\nExport options:");
+        System.out.println("1. Export filtered search results");
+        System.out.println("2. Export a single task");
+        System.out.println("3. Export all tasks in a project");
+        System.out.println("4. Export all tasks");
+        System.out.println("5. Skip export");
+        System.out.print("Choose an export scope (1-5): ");
+
+        String exportScopeChoice = scanner.nextLine().trim();
+        List<Task> tasksToExport = new ArrayList<>();
+
+        switch (exportScopeChoice) {
+            case "1":
+                tasksToExport = new ArrayList<>(results);
+                break;
+            case "2":
+                if (tasks.isEmpty()) {
+                    System.out.println("No tasks available to export.");
+                    scanner.close();
+                    return;
+                }
+
+                System.out.println("\nAvailable tasks:");
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println((i + 1) + ". " + tasks.get(i));
+                }
+
+                System.out.print("Enter task number to export: ");
+                try {
+                    int taskIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                        System.out.println("Invalid task number.");
+                        scanner.close();
+                        return;
+                    }
+                    tasksToExport.add(tasks.get(taskIndex));
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid task number.");
+                    scanner.close();
+                    return;
+                }
+                break;
+            case "3":
+                System.out.print("Enter project name: ");
+                String projectName = scanner.nextLine().trim();
+                Project selectedProject = projects.get(projectName);
+
+                if (selectedProject == null) {
+                    for (Project project : projects.values()) {
+                        if (project.getName() != null && project.getName().equalsIgnoreCase(projectName)) {
+                            selectedProject = project;
+                            break;
+                        }
+                    }
+                }
+
+                if (selectedProject == null) {
+                    System.out.println("Project not found.");
+                    scanner.close();
+                    return;
+                }
+
+                tasksToExport = new ArrayList<>(selectedProject.getTasks());
+                break;
+            case "4":
+                tasksToExport = new ArrayList<>(tasks);
+                break;
+            case "5":
+                System.out.println("Export skipped.");
+                scanner.close();
+                return;
+            default:
+                System.out.println("Invalid export option.");
+                scanner.close();
+                return;
         }
 
-        exportService.exportDatabase(outputPath, tasks, projects, collaborators);
+        if (tasksToExport.isEmpty()) {
+            System.out.println("No tasks match the selected export scope.");
+            scanner.close();
+            return;
+        }
+
+        System.out.println("\nExport format options:");
+        System.out.println("1. CSV");
+        System.out.println("2. iCal (.ics)");
+        System.out.print("Choose an export format (1-2): ");
+
+        String exportFormatChoice = scanner.nextLine().trim();
+        switch (exportFormatChoice) {
+            case "1":
+                System.out.print("Enter output CSV file path (default: exported_tasks.csv): ");
+                String csvOutputPath = scanner.nextLine().trim();
+                if (csvOutputPath.isEmpty()) {
+                    csvOutputPath = "exported_tasks.csv";
+                }
+
+                if (exportScopeChoice.equals("4")) {
+                    exportService.exportDatabase(csvOutputPath, tasks, projects, collaborators);
+                } else {
+                    exportService.exportTasks(csvOutputPath, tasksToExport);
+                }
+                break;
+            case "2":
+                System.out.print("Enter output .ics file path (default: tasks.ics): ");
+                String icsOutputPath = scanner.nextLine().trim();
+                if (icsOutputPath.isEmpty()) {
+                    icsOutputPath = "tasks.ics";
+                }
+
+                CalendarExportGateway gateway = new ICal4jCalendarGateway();
+                gateway.exportTasks(tasksToExport, icsOutputPath);
+                System.out.println("iCal export complete: " + icsOutputPath);
+                break;
+            default:
+                System.out.println("Invalid export format.");
+                scanner.close();
+                return;
+        }
+
+        scanner.close();
     }
 }

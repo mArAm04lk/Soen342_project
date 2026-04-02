@@ -16,6 +16,38 @@ public class exportService {
 
 	private static final String HEADER = "TaskName,Description,Subtask,Status,Priority,DueDate,ProjectName,ProjectDescription,Collaborator,CollaboratorCategory";
 
+	public static void exportTasks(String filePath, List<Task> tasks) {
+		try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+			writer.println(HEADER);
+
+			for (Task task : tasks) {
+				Project project = task.getProject();
+				Collaborator collaborator = task.getCollaborator();
+				LocalDate dueDate = task.getDueDate();
+
+				String[] columns = new String[] {
+						safe(task.getName()),
+						safe(task.getDescription()),
+						safe(task.getSubtask()),
+						safe(task.getStatus()),
+						safe(task.getPriority()),
+						dueDate == null ? "" : dueDate.toString(),
+						project == null ? "" : safe(project.getName()),
+						project == null ? "" : safe(project.getDescription()),
+						collaborator == null ? "" : safe(collaborator.getName()),
+						collaborator == null ? "" : safe(collaborator.getCategory())
+				};
+
+				writer.println(String.join(",", columns));
+			}
+
+			System.out.println("CSV export completed. Selected task list was exported.");
+			System.out.println("Output file: " + filePath);
+		} catch (IOException e) {
+			System.out.println("Error exporting CSV: " + e.getMessage());
+		}
+	}
+
 	public static void exportDatabase(String filePath,
 									  List<Task> tasks,
 									  Map<String, Project> projects,
