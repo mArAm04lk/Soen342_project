@@ -58,6 +58,9 @@ public class importService {
 
                 // Create task
                 Task task = new Task(taskName, description, subtask, status, priority, dueDate, project, collaborator);
+                if (project != null) {
+                    project.addTask(task);
+                }
                 tasks.add(task);
             }
 
