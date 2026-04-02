@@ -1,0 +1,8 @@
+Main.class
+model/Collaborator.class
+model/Project.class
+service/importService.class
+model/Subtask.class
+model/Task.class
+service/CalendarExportGateway.class
+service/ICal4jCalendarGateway.class
