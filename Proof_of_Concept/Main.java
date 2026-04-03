@@ -4,11 +4,13 @@ import service.ICal4jCalendarGateway;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
+import service.OverloadService;
 import service.exportService;
 import service.importService;
 import service.searchService;
 
 public class Main {
+    private static final String DIVIDER = "============================================================";
 
     // In-memory storage
     public static List<Task> tasks = new ArrayList<>();
@@ -19,37 +21,37 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Ask user to specify the CSV file
-        System.out.print("Enter CSV file path to import: ");
+        printBanner("Task Planner Console");
+        System.out.print("CSV file to import: ");
         String filePath = scanner.nextLine();
 
         // Check if file exists
         File csvFile = new File(filePath);
         if (!csvFile.exists()) {
-            System.out.println("File not found: " + filePath);
+            printMessage("File not found: " + filePath);
             return;  // Exit if file doesn't exist
         }
 
         // Import tasks from the specified file
         importService.importTasks(filePath, tasks, projects, collaborators);
 
-        // Print imported tasks
-        System.out.println("\nImported Tasks:");
-        for (Task t : tasks) {
-            System.out.println(t);
-        }
+        printSection("Import Summary");
+        System.out.println("Tasks loaded         : " + tasks.size());
+        System.out.println("Projects loaded      : " + projects.size());
+        System.out.println("Collaborators loaded : " + collaborators.size());
+        printTaskList("Imported Tasks", tasks, "No tasks were imported.");
 
-        System.out.println("\nProjects loaded: " + projects.size());
-        System.out.println("Collaborators loaded: " + collaborators.size());
-
-        System.out.println("\nSearch options:");
-        System.out.println("1. Keyword");
-        System.out.println("2. Status");
-        System.out.println("3. Priority");
-        System.out.println("4. Project");
-        System.out.println("5. Collaborator");
-        System.out.println("6. Due date");
-        System.out.print("Choose a search option (1-6): ");
+        printMenu(
+                "Search Options",
+                "1. Keyword",
+                "2. Status",
+                "3. Priority",
+                "4. Project",
+                "5. Collaborator",
+                "6. Due date",
+                "7. Overloaded collaborators"
+        );
+        System.out.print("Select a search option (1-7): ");
 
         String choice = scanner.nextLine().trim();
         List<Task> results = new ArrayList<>();
@@ -83,30 +85,44 @@ public class Main {
                     LocalDate dueDate = LocalDate.parse(dueDateInput);
                     results = searchService.searchByDueDate(tasks, dueDate);
                 } catch (Exception e) {
-                    System.out.println("Invalid date format. Use yyyy-MM-dd.");
+                    printMessage("Invalid date format. Use yyyy-MM-dd.");
                     return;
                 }
                 break;
+            case "7":
+                List<OverloadService.CollaboratorLoad> overloadedCollaborators =
+                        OverloadService.findOverloadedCollaborators(tasks);
+
+                printSection("Overloaded Collaborators");
+                if (overloadedCollaborators.isEmpty()) {
+                    System.out.println("No overloaded collaborators found.");
+                } else {
+                    int collaboratorNumber = 1;
+                    for (OverloadService.CollaboratorLoad load : overloadedCollaborators) {
+                        System.out.println(collaboratorNumber++ + ". " + load.getName() + " (" + load.getCategory() + ") - "
+                                + load.getAssignmentCount() + " active assignments, "
+                                + load.getOverdueCount() + " overdue, "
+                                + load.getUpcomingCount() + " due within 7 days");
+                    }
+                }
+
+                results = OverloadService.findTasksForOverloadedCollaborators(tasks);
+                break;
             default:
-                System.out.println("Invalid option.");
+                printMessage("Invalid option.");
                 return;
         }
 
-        System.out.println("\nSearch Results:");
-        if (results.isEmpty()) {
-            System.out.println("No matching tasks found.");
-        } else {
-            for (Task task : results) {
-                System.out.println(task);
-            }
-        }
+        printTaskList("Search Results", results, "No matching tasks found.");
 
-        System.out.println("\nExport options:");
-        System.out.println("1. Export filtered search results");
-        System.out.println("2. Export a single task");
-        System.out.println("3. Export all tasks in a project");
-        System.out.println("4. Export all tasks");
-        System.out.println("5. Skip export");
+        printMenu(
+                "Export Options",
+                "1. Export filtered search results",
+                "2. Export a single task",
+                "3. Export all tasks in a project",
+                "4. Export all tasks",
+                "5. Skip export"
+        );
         System.out.print("Choose an export scope (1-5): ");
 
         String exportScopeChoice = scanner.nextLine().trim();
@@ -118,27 +134,24 @@ public class Main {
                 break;
             case "2":
                 if (tasks.isEmpty()) {
-                    System.out.println("No tasks available to export.");
+                    printMessage("No tasks available to export.");
                     scanner.close();
                     return;
                 }
 
-                System.out.println("\nAvailable tasks:");
-                for (int i = 0; i < tasks.size(); i++) {
-                    System.out.println((i + 1) + ". " + tasks.get(i));
-                }
+                printTaskList("Available Tasks", tasks, "No tasks available.");
 
                 System.out.print("Enter task number to export: ");
                 try {
                     int taskIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        System.out.println("Invalid task number.");
+                        printMessage("Invalid task number.");
                         scanner.close();
                         return;
                     }
                     tasksToExport.add(tasks.get(taskIndex));
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid task number.");
+                    printMessage("Invalid task number.");
                     scanner.close();
                     return;
                 }
@@ -158,7 +171,7 @@ public class Main {
                 }
 
                 if (selectedProject == null) {
-                    System.out.println("Project not found.");
+                    printMessage("Project not found.");
                     scanner.close();
                     return;
                 }
@@ -169,24 +182,26 @@ public class Main {
                 tasksToExport = new ArrayList<>(tasks);
                 break;
             case "5":
-                System.out.println("Export skipped.");
+                printMessage("Export skipped.");
                 scanner.close();
                 return;
             default:
-                System.out.println("Invalid export option.");
+                printMessage("Invalid export option.");
                 scanner.close();
                 return;
         }
 
         if (tasksToExport.isEmpty()) {
-            System.out.println("No tasks match the selected export scope.");
+            printMessage("No tasks match the selected export scope.");
             scanner.close();
             return;
         }
 
-        System.out.println("\nExport format options:");
-        System.out.println("1. CSV");
-        System.out.println("2. iCal (.ics)");
+        printMenu(
+                "Export Format",
+                "1. CSV",
+                "2. iCal (.ics)"
+        );
         System.out.print("Choose an export format (1-2): ");
 
         String exportFormatChoice = scanner.nextLine().trim();
@@ -203,6 +218,7 @@ public class Main {
                 } else {
                     exportService.exportTasks(csvOutputPath, tasksToExport);
                 }
+                printMessage("CSV export complete: " + csvOutputPath);
                 break;
             case "2":
                 System.out.print("Enter output .ics file path (default: tasks.ics): ");
@@ -213,14 +229,69 @@ public class Main {
 
                 CalendarExportGateway gateway = new ICal4jCalendarGateway();
                 gateway.exportTasks(tasksToExport, icsOutputPath);
-                System.out.println("iCal export complete: " + icsOutputPath);
+                printMessage("iCal export complete: " + icsOutputPath);
                 break;
             default:
-                System.out.println("Invalid export format.");
+                printMessage("Invalid export format.");
                 scanner.close();
                 return;
         }
 
         scanner.close();
+    }
+
+    private static void printBanner(String title) {
+        System.out.println();
+        System.out.println(DIVIDER);
+        System.out.println(centerText(title));
+        System.out.println(DIVIDER);
+    }
+
+    private static void printSection(String title) {
+        System.out.println();
+        System.out.println("-- " + title + " " + "-".repeat(Math.max(0, 48 - title.length())));
+    }
+
+    private static void printMenu(String title, String... options) {
+        printSection(title);
+        for (String option : options) {
+            System.out.println("  " + option);
+        }
+        System.out.println();
+    }
+
+    private static void printTaskList(String title, List<Task> taskList, String emptyMessage) {
+        printSection(title);
+        if (taskList == null || taskList.isEmpty()) {
+            System.out.println(emptyMessage);
+            return;
+        }
+
+        for (int i = 0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            System.out.println((i + 1) + ". " + formatTask(task));
+        }
+    }
+
+    private static String formatTask(Task task) {
+        String projectName = task.getProject() != null ? task.getProject().getName() : "No project";
+        String collaboratorName = task.getCollaborator() != null ? task.getCollaborator().getName() : "Unassigned";
+
+        return task.getName()
+                + " | " + task.getStatus()
+                + " | " + task.getPriority()
+                + " | due " + task.getDueDate()
+                + " | " + projectName
+                + " | " + collaboratorName;
+    }
+
+    private static void printMessage(String message) {
+        System.out.println();
+        System.out.println("> " + message);
+    }
+
+    private static String centerText(String text) {
+        int padding = Math.max(0, (DIVIDER.length() - text.length()) / 2);
+        return " ".repeat(padding) + text;
     }
 }
