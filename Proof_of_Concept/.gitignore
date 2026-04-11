@@ -6,3 +6,5 @@ bin/
 target/
 
 Proof_of_Concept/exported_tasks.ics
+task_planner_db.mv.db
+task_planner_db.trace.db
