@@ -104,6 +104,15 @@ public class DatabaseService {
         }
     }
 
+    public static boolean updateTaskStatus(long taskId, String status) throws SQLException {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement("UPDATE tasks SET status = ? WHERE id = ?")) {
+            statement.setString(1, status);
+            statement.setLong(2, taskId);
+            return statement.executeUpdate() > 0;
+        }
+    }
+
     public static List<TaskRecord> readRecordsFromCsv(String filePath) {
         List<TaskRecord> records = new ArrayList<>();
 
@@ -319,6 +328,7 @@ public class DatabaseService {
 
                 Date dueDate = result.getDate("due_date");
                 Task task = new Task(
+                    id,
                         result.getString("name"),
                         result.getString("description"),
                         result.getString("subtask"),
