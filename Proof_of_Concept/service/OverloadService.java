@@ -101,7 +101,10 @@ public class OverloadService {
         String normalizedStatus = status.trim().toLowerCase();
         return normalizedStatus.equals("done")
             || normalizedStatus.equals("completed")
-            || normalizedStatus.equals("closed");
+            || normalizedStatus.equals("closed")
+            || normalizedStatus.equals("cancel")
+            || normalizedStatus.equals("canceled")
+            || normalizedStatus.equals("cancelled");
     }
 
     public static class CollaboratorLoad {

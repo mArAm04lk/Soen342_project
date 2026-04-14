@@ -1,6 +1,7 @@
 import model.*;
 import service.CalendarExportGateway;
 import service.ICal4jCalendarGateway;
+import service.DatabaseService;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
@@ -114,6 +115,28 @@ public class Main {
         }
 
         printTaskList("Search Results", results, "No matching tasks found.");
+
+        if (!results.isEmpty()) {
+            printMenu(
+                    "Task Actions",
+                    "1. Continue to export",
+                    "2. Cancel a task from search results"
+            );
+            System.out.print("Choose an action (1-2): ");
+
+            String taskActionChoice = scanner.nextLine().trim();
+            switch (taskActionChoice) {
+                case "1":
+                    break;
+                case "2":
+                    cancelTaskFromResults(scanner, results);
+                    break;
+                default:
+                    printMessage("Invalid task action.");
+                    scanner.close();
+                    return;
+            }
+        }
 
         printMenu(
                 "Export Options",
@@ -288,6 +311,63 @@ public class Main {
     private static void printMessage(String message) {
         System.out.println();
         System.out.println("> " + message);
+    }
+
+    private static void cancelTaskFromResults(Scanner scanner, List<Task> results) {
+        printTaskList("Search Results", results, "No matching tasks found.");
+        System.out.print("Enter task number to cancel: ");
+
+        int taskIndex;
+        try {
+            taskIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+        } catch (NumberFormatException e) {
+            printMessage("Invalid task number.");
+            return;
+        }
+
+        if (taskIndex < 0 || taskIndex >= results.size()) {
+            printMessage("Invalid task number.");
+            return;
+        }
+
+        Task taskToCancel = results.get(taskIndex);
+        if (isInactiveStatus(taskToCancel.getStatus())) {
+            printMessage("Task is already inactive: " + taskToCancel.getStatus());
+            return;
+        }
+
+        taskToCancel.cancelTask();
+
+        Long taskId = taskToCancel.getId();
+        if (taskId == null) {
+            printMessage("Task cancelled in memory. No database id was available for persistence.");
+            return;
+        }
+
+        try {
+            boolean updated = DatabaseService.updateTaskStatus(taskId, taskToCancel.getStatus());
+            if (updated) {
+                printMessage("Task cancelled successfully.");
+            } else {
+                printMessage("Task cancelled in memory, but database update did not affect any rows.");
+            }
+        } catch (Exception e) {
+            printMessage("Task cancelled in memory, but failed to persist to database: " + e.getMessage());
+        }
+    }
+
+    private static boolean isInactiveStatus(String status) {
+        if (status == null) {
+            return false;
+        }
+
+        String normalizedStatus = status.trim().toLowerCase();
+        return normalizedStatus.equals("done")
+                || normalizedStatus.equals("completed")
+                || normalizedStatus.equals("closed")
+                || normalizedStatus.equals("cancel")
+                || normalizedStatus.equals("canceled")
+                || normalizedStatus.equals("cancelled");
     }
 
     private static String centerText(String text) {
